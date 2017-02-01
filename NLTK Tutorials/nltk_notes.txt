@@ -1,0 +1,171 @@
+Tokenizing -
+    Word tokenizer - separates by word
+    Sentence tokenizer - separates by sentence
+There are many ways to tokenize using nltk. There are 3 included in Tutorials/tokenizing.py (nltk's naitive tokenizer,
+trained PunktSentenceTokenizer, and pretrained PunktSentenceTokenizer):
+
+========================================================================================================================
+
+Lexicon - The words and their meanings (dictionary, financial speak). On this computer, lexicon (and corpora) are found
+in /Users/dsiegler19/nltk_data/corpora.
+Corpora - A body of text (i.e. medical journals, presidential speeches, anything in the english language). On this
+computer, corpora (and lexicon) are found in /Users/dsiegler19/nltk_data/corpora.
+
+Some examples are found in Tutorials/lexicon_and_corpora.py
+
+========================================================================================================================
+
+Stop words - Commonly used words like and, by, then, at, etc. that provide no real meaning to the computer, so
+they are often ignored completely. Code to do this is in Tutorials/stop_words.py.
+
+========================================================================================================================
+
+Stemming - A process of "normalizing" words. It removes things like tense, person, number, etc.
+
+    I was taking a ride in the car
+    I was riding in the car
+
+These sentences mean the same thing, so stemming would turn both of these verbs into simply ride.
+
+    Eat
+    Eating
+    Was eating
+    About to eat
+    Will eat
+    Eater
+    Eaten
+
+These would all simply become eat. Code to do this is in Tutorials/stemming.py.
+
+========================================================================================================================
+
+Part of speech tagging - Labeling the part of speech for every word.
+
+Part of speech tag list:
+|-------------------------------------------------------------------------------|
+|Abbreviation |          Meaning/Explanation           |        Example         |
+|-------------|----------------------------------------|------------------------|
+|    CC       |  coordinating conjunction              |  and                   |
+|    CD	      |  cardinal digit                        |  7                     |
+|    DT	      |  determiner                            |  an                    |
+|    EX	      |  existential                           |  there is/there exists |
+|    FW	      |  foreign word                          |  bonjour               |
+|    IN	      |  preposition/subordinating conjunction |  under/because         |
+|    JJ	      |  adjective	                           |  big                   |
+|    JJR      |  adjective, comparative                |  bigger                |
+|    JJS      |  adjective, superlative                |  biggest               |
+|    LS	      |  list marker                           |  1)                    |
+|    MD	      |  modal                                 |  will, could           |
+|    NN       |  noun, singular                        |  desk                  |
+|    NNS      |  noun plural	                       |  desks                 |
+|    NNP      |  proper noun, singular                 |  Smith                 |
+|    NNPS     |  proper noun, plural	               |  Americans             |
+|    PDT      |  predeterminer                         |  all                   |
+|    POS      |  possessive ending                     |  parent's              |
+|    PRP      |  personal pronoun                      |  I, he, she            |
+|    PRP$     |  possessive pronoun                    |  my, his, hers         |
+|    RB	      |  adverb                                |  silently              |
+|    RBR      |  adverb, comparative                   |  silenter              |
+|    RBS      |  adverb, superlative                   |  silentist             |
+|    RP	      |  particle (doesn't inflect)	           |  give up (only up)     |
+|    TO	      |  the word to in any use                |  to                    |
+|    UH	      |  interjection	                       |  errrrrrrrm            |
+|    VB	      |  verb, base form	                   |  take                  |
+|    VBD	  |  verb, past tense	                   |  took                  |
+|    VBG	  |  verb, gerund/present participle	   |  taking                |
+|    VBN      |  verb, past participle	               |  taken                 |
+|    VBP	  |  verb, sing. present, non-3d	       |  take                  |
+|    VBZ      |  verb, 3rd person sing. present	       |  takes                 |
+|    WDT      |  wh-determiner	                       |  which                 |
+|    WP	      |  wh-pronoun	                           |  who, what             |
+|    WP       |  possessive wh-pronoun                 |  whose                 |
+|    WRB	  |  wh-abverb	                           |  where, when           |
+|-------------------------------------------------------------------------------|
+
+Code to do this is in Tutorials/POS_tagging.py.
+
+========================================================================================================================
+
+Chunking - Given that some text has been tokenized by word and sentance and has been tagged by part of speech, chunking
+finds the named entities (nouns), words that modify each of these named entities, and what each one is refering to.
+Chunking splits each sentance into noun phrases. Chunked words must be next to each other.
+
+Chunking is mainly done using regular expressions. Here is a tutorial on regular expressions:
+https://pythonprogramming.net/regular-expressions-regex-tutorial-python-3/
+
+By convention the chunk is included in a raw triple quote string (see example code):
+
+               regex expression
+r"""ChunkName: {<POSIdentifier>}"""
+
+Code to do this (with a regular expression that can be improved upon) is in Tutorials/chunking.py.
+
+========================================================================================================================
+
+Chinking - Removing something from a chunk. One can say to chunk everything and then chink (remove) a few things from
+the chunks. Chinking is also done via regular expressions and is in the same string as the chunk (see example code).
+Code to do this (with regular expressions that can be improved upon) is in Tutorials/chinking.py.
+
+========================================================================================================================
+
+Name Entity Recognition - A way of chunking to find most proper nouns. The nltk.ne_chunk() method finds things such as
+names, places, organizations, dates, money, and other named entities. When binary argument of nltk.ne_chunk() is true,
+named entities will all be categorized as NE. This means a phrase like "White House" will be categorized as one chunk
+since they are both simply NEs. When binary is false (default), it will provide more specific categories of named
+entities such as PERSON or GPE. As well, when binary is false it will separate a phrase such as "White House" into
+White (FACILITY) and House (ORGANIZATION).
+
+Named entity types and examples:
+|----------------------------------------------------------|
+|     Name     |               Example                     |
+|----------------------------------------------------------|
+| ORGANIZATION | Georgia-Pacific Corp., WHO                |
+| PERSON       | Eddy Bonte, President Obama               |
+| LOCATION     | Murray River, Mount Everest               |
+| DATE         | June, 2008-06-29                          |
+| TIME         | two fifty a m, 1:30 p.m.                  |
+| MONEY        | 175 million Canadian Dollars, GBP 10.40   |
+| PERCENT      | twenty pct, 18.75 %                       |
+| FACILITY     | Washington Monument, Stonehenge           |
+| GPE          | South East Asia, Midlothian               |
+|----------------------------------------------------------|
+
+Code to do this can be found in Tutorials/NE_recognition.py.
+
+========================================================================================================================
+
+Lemmatizing - A similar operation to stemming, but the end result is an actual word. That word may be the root of the
+original word or it may be a synonym. Lemmatizing is often better and more effective then stemming. The lemmatizer
+assumes that all words it is given are nouns, so one must specify if the word is not a noun for the lemmatizer to
+lemmatize it correctly.
+
+Code to do this can be found in Tutorials/lemmatizing.py
+
+========================================================================================================================
+
+WordNet - WordNet is a tool for looking up synonyms, antonyms, definitions, context of words, and many other useful
+tools. This tool also includes a lexicon of the English language, a synonym and antonym dictionary, and a word context
+dictionary. Some ways to use WordNet are:
+
+- Find all of the synonyms and antonyms of words
+- Find the definitions of a word
+- Find example uses of a word
+- Test to see how similar 2 words are
+
+Code to do all of this can be found in Tutorials/wordnet.py.
+
+========================================================================================================================
+
+Text Classification using Sentimental Analysis - A way of classifying text as having a positive, negative, or neutral
+opinion/connotation of what they are talking about.
+
+Code to do this can be found in TextClassifier/text_classifier.py
+
+========================================================================================================================
+
+Pickle - A module that can be used to save Python objects. In this case it is used to save the training data in
+TextClassifier/text_classifier.py.
+
+========================================================================================================================
+
+Sicit-Learn - A machine learning module used in conjunction with nltk.

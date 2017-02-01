@@ -1,0 +1,487 @@
+Linear Regression - Linear regression attempts to find the best fit line in the form of y = mx + b This line is found
+using the following math:
+m = (mean(x) * mean(y) - mean(x * y)) / ((mean(x) ^ 2) - mean(x ^ 2))
+Where x and y are the set of all x and y values respectively and x ^ 2 means all of the x values squared
+b = mean(y) - m * mean(x)
+
+Accuracy in linear regression is equal to the r squared value (also known as the coefficient of determination),
+which is more like a measure of how linear the data is. r squared is calculated using the following math:
+r squared = 1 - (SE of best fit line / SE of mean of y)
+Where SE stands for squared error (this is the sum of the squares of the distances from each point to the line).
+Squaring is done to turn negatives to positives and penalize for outliers (as they mean the data set is less linear)
+This means r squared is 1 - the ratio of the SE of the best fit line to the ratio of the SE of the mean of y (the
+mean of y is just a horizontal line). For example, if r squared = 0.8 then the SE of the best fit line could be 2
+and the best fit of the mean of the ys could be 10. This means y squared = 1 - (2 / 10) = 0.8.
+Examples of this can be found at sklearn_linear_resgression.py and custom_linear_resgression.py.
+
+------------------------------------------------------------------------------------------------------------------------
+
+k Nearest Neighbors - k nearest neighbor is a way of classifying data based on its nearest neighbors
+|
+|          p1    +
+|              +
+|                +
+|
+|         p3
+|  p2
+|    -
+| -
+|   -
+|------------------
+p1 is clearly nearest to the positives and p2 is clearly nearest the negatives. However, p3 doesn't seem to be
+near either side. A k nearest neighbor classifier would look at the k nearest neighbors to p3, as it cannot look
+at all of the points. In this case if k = 3 then it would likely determine that p3's nearest neighbors are -, +, +,
+making p3 positive. Although k nearest neighbor is easily threadable, it is much less efficient on larger data sets.
+Also, nearest neighbors don't only need to be found in 2 or 3 dimensions. Euclidean distances work in any dimension. The
+formula for Euclidean distance of 2 points q and p in n dimensional space is found in Euclidean Distance.png.
+Examples of this can be found at custom_k_nearest_neighbors.py and sklearn_k_nearest_neighbors.py.
+
+------------------------------------------------------------------------------------------------------------------------
+
+Support Vecor Machines (SVM) - SVMs are a very common machine learning algorithm. An SVM attempts to find the best
+separating hyperplane (since an SVM works in multidimensional, it is a hyperplane, in 2d space this would be just a
+line). An SVM is binary, meaning that it can only classify data into 2 sets at a time. This doesn't mean that an SVM
+can't classify data into more than 2 categories, it just means it only categorizes into 2 categories at a time.
+^
+|
+|                +
+|              +
+|                +
+|
+|
+|
+|    -
+| -
+|   -
+|------------------>
+An SVM would look to find the separating hyperplane that maximizes the distance from that hyperplane to each point
+^
+|    \
+|     \          +
+|      \       +/
+|      /\     //  +
+|     / /\   //  /
+|    / // \ //  /
+|   / //   \/  /
+|  / -/     \ /
+| -  /       \
+|   -         \
+|------------------>
+Imagine each of the lines were perpendicular to the separating hyperplane. Although there are other separating
+hyperplanes, this one maximizes the distance to each of the points. This concept can be applied in higher dimensions.
+^
+|    \
+|     \   p1       +
+|      \       +
+|  p2   \           +
+|        \
+|         \
+|          \
+|    -      \
+| -          \
+|   -         \
+|------------------>
+Since p1 is to the right of the separating hyperplane, p1 is +. Since p2 is to the left of the separating hyperplane,
+it is -.
+Vectors have both magnitude and direction. Vectors are represented like this:
+->
+A  = [3, 4] represents a vector going from [0, 0] to [3, 4]. Its magnitude is calculated like its length (or norm as
+it is called in linear algebra):
+||A|| = sqrt((3 ^ 2) + (4 ^ 2))
+Multiplying vectors is done with the dot (·) operator and it results in a scalar (regular number), or a vector with
+just magnitude
+->           ->
+B = [1, 3]   C = [4, 2]
+->  ->
+A · B = (1 * 4) + (3 * 2) = 10
+Once the SVM has been trained, how does it classify something? This is done through support vector assertion (see
+Support Vector Assertion.png). A vector W is a vector perpendicular to the separating hyperplane. When the SVM goes to
+classify a point, it makes a vector U to that point and then projects U onto W and calculates, accounting for the
+bias, whether U "goes past" the separating hyperplane (+) or "stays behind" it (-). This is calculated by this
+formula:
+U · W + b
+If this is > 0 then it is positive, if it = 0 then it on the decision boundary, and if it is < 0 then it is negative.
+However, the SVM still has to calculate W and b. Math tells us that if point X is in the positive SV domain then
+the equation = 1 and if X is in the negative SV domain then the equation = -1. This means:
+X(+) · W + b = 1
+X(-) · W + b = -1
+The SVM can introduce variable y sub i (denoted y(i)), which is dependant on the class of X. This means when X is in
+the positive SV domain y(i) = 1 and when X is in the negative SV domain, y(i) = -1
+Going back to the previous equations, the SVM can now use y(i) to manipulate the equations:
+X(+) · W + b = 1      y(i) = 1
+X(-) · W + b = -1     y(i) = -1
+Multiplying both sides by y(i):
+y(i)(X(+) · W + b) = 1 * 1 = 1
+y(i)(X(-) · W + b) = -1 * -1 = 1
+Subtracting 1 from both sides to make the right hand = 0:
+y(i)(X · W + b) - 1 = 0
+And this is the equation that the SVM uses to classify Xs. However, this equation doesn't define a support vector,
+but for a SVM to be good its support vectors must satisfy this equation. A support vector is simply a vector that,
+if moved, would change the best separating hyperplane.
+^
+|               \
+|                +
+|                 \
+|\                 +
+| \                 \
+|  \                 \
+|   \                 \
+|    -
+|     \
+|      \
+|---------------------->
+These are 2 support vectors.
+To get the best separating hyperplane the SVM simply takes the width between the support vectors, divides it by 2,
+and adds that scalar to the smaller of the to support vectors.
+^
+|              /\
+|             /  +
+|            /    \
+|\          /      +
+| \        /        \
+|  \      /width     \      The width line should be perpendicular to the 2 support vectors
+|   \    /            \
+|    -  /
+|     \/
+|      \
+|---------------------->
+However, to make the best separating hyperplane the SVM must maximize the width. Here is the math to calculate width:
+width = (x(+) - x(-)) · (w / ||w||)
+To simplify this, recalling the earlier equation:
+y(i)(X · W + b) - 1 = 0
+Therefore:
+x(+) = 1 - b
+x(-) = 1 + b
+Simplifying further:
+width = 2/||w||
+So to maximize this the SVM would minimize the magnitude of w. Also (for mathematical convenience), the SVM would also
+want to minimize:
+(1/2) * (||w|| ^ 2)
+
+The SVM also has to respect the constraint of the SV (y(i)(X · W + b) - 1 = 0). To minimize this, the SVM has to use
+Lagrange Multipliers (or Lagrangian Equations). More on these can be found at:
+http://mavdisk.mnsu.edu/singed/Math%20223/Solving%20Lagrange%20Multiplier%20Equations.pdf, but simply put it is a method
+to minimize one function with respect to another. In this case:
+L(W, b) = (1/2) * (||w|| ^ 2) - Σα(i)[y(i)(X · W + b) - 1]
+α(i) denotes α subscript i
+In order to minimize w, b must be maximized. The equation for a hyperplane is:
+(W · X) + b
+This looks very similar to mx + b. In a hyperplane b (in SVMs it is called bias) represents how far up the hyperplane
+is. To visualize this, see Bias.png. In order to minimize this Lagrangian, the SVM must differentiate L with respect to
+W and L with respect to b. Where d denotes differentiation:
+dL/dW
+dL/db
+Leaving the linear algebra and the differential calculus to the experts:
+dL/dW = w - Σ(α(i) * y(i) * x (i))
+Which implies:
+w = Σ(α(i) * y(i) * x (i))
+Also:
+dL/db = Σ(α(i) * y(i))
+And therefore L solves out to be:
+L = w = Σ(α(i) - (1 / 2)Σ(α(i)α(j)y(i)y(j) · (x(i) · x(j))))
+        i               ij
+A much prettier version of this equation can be found at Solving for L.png
+The SVM wants to maximize L. Seeing the α(i)α(j), this indicates that an SVM is a quadratic programming problem (there
+is no one way to solve it).
+Going through this formal proof helps to explain certain things about an SVM:
+- They are very complex and hard to optimize
+- All of the data set must be loaded to memory, which sometimes isn't feasible, but there are ways of partitioning the
+ data set to help this problem, the most prominent of which is Sequential Minimal Optimization (SMO)
+- Once an SVM has been trained, the training features can be discarded
+- Classification is simply the sign (positive or negative) of (W · X) + b
+
+And now for a less formal look at an SVM:
+Recall that (W · X) + b = 1 is the actual positive support vector and (W · X) + b = -1 is the actual negative support
+vector and (W · X) + b = 0 is the decision boundary. That means that to classify, all the SVM has to do is plug into
+(W · X) + b and see if it is positive, negative, or 0 (on the decision boundary). To train the SVM it has to optimize
+W and b. However, this must be done given certain constraints:
+- Minimize ||W||
+- Maximize b (bias)
+Recall that the constraint on W and b is:
+y(i)(x(i) · W + b) >= 1 for every class
+Where y(i) is the class (-1 or 1). This can also be written as:
+class(known features · W + b) >= 1
+There are many Ws and bs that satisfy this equation, but the challenge is to find the W with the greatest magnitude and
+smallest b. This means that an SVM is just an optimization problem. However, this also means that it is a quadratic
+programming problem (there is no one way to solve it). But, an SVM is a convex problem. This means that the curve of
+||W|| is convex (it looks like a bowl). This means that the SVM can lower W in big steps until it overshoots then go
+back with smaller steps until it undershoots then come back up with even smaller steps until it overshoots, etc.
+However, the fact that ||W|| is in a convex (bowl-like) shape is crucial because it means that the SVM is assured that
+it is finding the global minimum (not just a local minimum). It is like putting a ball in a bowl; it will fall to the
+bottom. If a ball is put in a mountain range it may roll into a valley, but not the deepest valley (because it cannot
+"see" that next bigger valley).
+The SVM will iterate through Ws. For example, say it starts at W = [10, 10]. The SVM will plug W into the equation
+y(i)(x(i) · W + b) >= 1
+and find the greatest value for b that satisfies the inequality. The SVM can then save this to a dictionary like this:
+mags = {||W|| : [W, b]}
+The SVM can then simply search this dictionary for the lowest key. The SVM will step down until it has passed
+the minimum, then it step back up (with smaller steps) until it has passed it in the other direction. It will continue
+honing in on the minimum until it gets very close (it won't get the true minimum). However, how does the SVM know when
+it has found the best support vectors? The support vectors will all equal 1. More formally:
+S ε support vectors
+y(i)(S · W + b) = 1
+Examples of this can be found at sklearn_svm.py and custom_svm.py.
+
+------------------------------------------------------------------------------------------------------------------------
+
+Kernels - In the real world, it is highly unlikely for a set of data to be linearly separable. For example:
+
+x2
+^
+|
+|  +           -
+|      +     +
+|       -   -
+|    -    +
+|   +
+|     +    -
+|  -
+|------------------> x1
+
+This data has no clear support vectors or a good separating hyperplane. One crude way to get around this is to project
+this data into another dimension giving it artificial linearity in that extra dimension. One simple way to do this would
+be:
+x3 = x1 * x2
+However, in a data set which could be 1000+ dimensions, adding only 1 dimension wouldn't do anything. In reality, this
+would require a 50% increase in dimensions (2 dimensions to 3 in this case) in order for this method to be effective.
+Recalling that SVMs struggle with larger data set, this only works against the SVM. Kernels provide a way to work in
+infinite dimensions with little to no extra computing cost. Simply put, a kernel is a similarity function. It takes 2
+inputs and outputs its similarity. Kernels can augment an SVM by allowing it to work with nonlinear data by transforming
+it to another dimension and creating a linearly separable data set in a higher dimension. Mathematically kernels use the
+inner product of 2 vectors, which is basically just the dot product. In order to use a kernel, the SVM must be able to
+use the inner product. If x space is the feature space, y is the class, so z will denote the kernel space. Now the SVM
+could interchange x for z wherever x is dot multiplied by something. This is due to the fact that dot multiplication
+returns a scalar value. This means that since z contains x (since there is no loss of data by putting x into a higher
+dimension), it doesn't matter that x may be 5 dimensions while z is 50 (because dot multiplication returns a scalar
+value regardless of dimension). Recalling the times that x is used (to check if it can be replaced by z):
+Prediction: y = sign(W · x + b)                                            Yes because x is dotted with W
+Constraint 1: y(i)(x(i) · W + b) - 1 >= 0                                  Yes because x(i) is dotted with W
+Constraint 2: W = Σ(α(i) · y(i) · x(i))                                    Yes because x(i) is dotted with y(i) and α(i)
+Legrangian: L = w = Σ(α(i) - (1 / 2)Σ(α(i)α(j)y(i)y(j) · (x(i) · x(j))))   Yes because x(i) and x(j) is dotted
+                    i               ij
+
+
+This is what a kernel might look like (with Φ denoting the kernel function):
+Φ(x, x') = z · z' (also written as: Φ(x1, x2) = z1 · z2)
+Where z = f(x) and z' = f(x'). This means all the SVM needs from the kernel is a scalar value (because it gives the dot
+product of z and z'). Furthermore, the SVM doesn't actually need to visit these dimensions, it only needs the scalar
+value. For example:
+X = [x1, x2]
+Where X is the feature set and the kernel does a 2nd order polynomial on X to get it into 6 dimensions.
+z = [1, x1, x2, x1 ^ 2, x2 ^ 2, x1x2]
+z' = [1, x1', x2', x1' ^ 2, x2' ^ 2, x1'x2']
+Recalling that Φ(x, x') = z · z', Φ(x1, x2) would equal z * z' (z and z' are nearly identical, making this almost the
+same as z ^ 2). This means that:
+Φ(x, x') = 1 + x1x1' + x2x2' + (x1 ^ 2)(x1' ^ 2) + (x2 ^ 2)(x2' ^ 2) + x1x1'x2x2'
+Although this achieves the goal of going to higher dimensions, this still takes a lot of processing power. Nearly all of
+this processing power can be saved using the polynomial kernel. The polynomial kernel is the following:
+Φ(x, x') = (1 + x · x') ^ p
+Where p is any number. This kernel completely eliminates the need to go to the z space. Where n is the number of
+dimensions in x and x':
+Φ(x, x') = (1 + x1x1' + ... + xnxn') ^ p
+This is much easier for a computer to do for both higher values of n and p. Another much more complex kernel is the
+radial basis function (RBF) kernel. An RBF kernel would look like the following:
+Φ(x, x') = exp(-γ * ||x - x'|| ^ 2 )
+Where exp(x) = e ^ x and γ is a value. This RBF kernel would go into infinite dimensions. However, at some point this
+may cause non-linearly separable data to become linearly separable (when it shouldn't be). Code has to detect and stop
+this from happening. RBF is the default kernel for most all machine learning libraries including scikit learn.
+Some examples for kernels can be found at kernels_and_soft_margins.py.
+
+------------------------------------------------------------------------------------------------------------------------
+
+Soft Margin SVM - Since not all data is truly linearly separable and often, if left unchecked, an SVM may overfit the
+training data. Overfitting is where too many of the points in the training set help to define the separating hyperplane.
+This means that when it is fed testing data, the SVM is so finely tuned just to the training data that it will perform
+poorly in classifying testing data. To avoid this, the "default" classification method for many machine learning
+algorithms (including scikit learn) is the soft margin SVM. In the soft margin SVM an often more linear (and thus less
+fitting to the training data) separating hyperplane is created. However, instead of simply checking to which side a
+point is when the SVM going to classify that point, a soft margin SVM will also generate an error value (like in linear
+regression), which is the distance from the point to the separating hyperplane. The SVM uses slack (ξ) to account for
+the error. Recalling the constraint:
+y(i)(x(i) · W + b) >= 1
+Introducing slack (ξ) allows this constraint to be relaxed to:
+y(i)(x(i) · W + b) >= 1 - ξ
+Obviously:
+ξ >= 0
+And if ξ = 0 then the SVM is hard margin. The larger ξ is the more lenience the SVM is given. The total slack is:
+Σ(ξ(i))
+i
+The SVM wants to minimize ξ. Now, instead of minimizing (1/2)(||W|| ^ 2), the SVM now wishes to minimize:
+(1/2)(||W|| ^ 2) + C * Σ(ξ(i))
+                       i
+Looking at this equation, what is C? No longer is the SVM trying just to minimize the magnitude of W, it is trying to
+minimize the sum of the magnitude of W and the total of all of the slacks. Since the total of all of the slacks is
+multiplied by C, this means that the higher the C value the more the SVM is "punished" for higher slack and the lower
+the C value the more "accepting" the SVM is of slack. C is a parameter when the SVM is initialized. Often C is set to
+1.0 by default.
+Some examples for soft margin SVMs can be found at kernels_and_soft_margins.py.
+
+------------------------------------------------------------------------------------------------------------------------
+
+Classifying Into More Than Two Categories - Since SVMs can only classify into 2 categories at a time, there are 2 main
+approaches to classifying into 3+ categories.
+
+^
+|
+|                2
+|              2
+|                2 2
+|
+|                       3
+|                   3 3
+|    1                 3
+| 1    1
+|   1
+|-------------------------->
+
+One vs Rest: This strategy creates a hyperplane separating each category from the rest. In the example shown above, the
+OVR would create a separating hyperplane for 1 vs 2 and 3, 2 vs 1 and 3, and 3 vs 1 and 2. This is usually the default
+for classifying into more than two categories. The problem with OVR is that it may create an imbalanced separating
+hyperplane, as it would in this case (because would have 4 samples vs 8 samples).
+
+One vs One: This strategy creates a hyperplane separating each category from each other category. In the example shown
+above, the OVO would create a separating hyperplane for 1 vs 2, 1 vs 3, and 2 vs 3. This strategy means that classifying
+is more intensive, but a little bit more balanced.
+
+------------------------------------------------------------------------------------------------------------------------
+
+SVM/SVC Parameters - Going through the parameters of scikit learn's SVC. These can be found at:
+http://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html
+
+C: Since scikit learn's SVC is soft margin, C dictates the importance of slack. If C = 0.0, the SVC will be hard margin.
+kernel: The kernel (polynomial, gaussian, etc.).
+degree: The degree (p value) for the polynomial kernel.
+gamma: The gamma value for rbf.
+coef0: The independent term in the polynomial kernel function.
+probability: Enables or disables a probability estimate for the SVC.
+shrinking: Whether to use the shrinking heuristic in Sequential Minimal Optimization (SMO).
+tol: The threshold for stopping optimization (for example if tol = 0.1 then (W · X) + b must be greater than or equal to
+0.9 and less than or equal to 1.1.
+cache_size: The size of the kernel cache in megabytes.
+class_weight: A way to weight certain classes more than others.
+verbose: Whether to print out all of the debug / training information or not.
+max_iter: A hard limit on the number of steps to take.
+random_state: The seed to use for the psudorandom number generator if using probability estimates.
+
+------------------------------------------------------------------------------------------------------------------------
+
+Clustering and Unsupervised Learning - Up to this point all of the algorithms have been told what the categories are and
+have been given many examples of each category. This is called supervised learning. Clustering is a form of unsupervised
+learning, which means that the algorithm isn't given the categories; it has to figure out categories on its own. There
+are two main forms of clustering: flat clustering and hierarchical clustering. The algorithm searches the feature set
+for clusters and gives each one a label. In flat clustering the algorithm is given a number of clusters to find and it
+must find exactly that many clusters. In hierarchical clustering, the algorithm has to determine where the clusters are
+and how many clusters there are. This will be an examination of clustering using K-means. In K-means, K is the number of
+clusters for the algorithm to find. K-means is a type of flat clustering. For example, if K = 2 then it may find these
+clusters:
+^
+|      ______
+|     /  o o|     __________
+|    /  o o |     |  o  o  /
+|   /   o  o|     |o  o o /
+|  |        |      \  o  /
+|  |   o  o /       \o o/
+|   \ o o  /         \_/
+|    \ o  /
+|     \__|
+|
+|
+|
+|------------------------------->
+However, if mean shift (a hierarchical clustering algorithm) was run on the same data set, it might produces there
+clusters:
+^
+|      ______
+|     /  o o|     __________
+|    /  o o |     |  o  o  /
+|   /   o  o|     |o  o o /
+|  |========|      \  o  /
+|  |   o  o /       \o o/
+|   \ o o  /         \_/
+|    \ o  /
+|     \__|
+|
+|
+|
+|------------------------------->
+------------------------------------------------------------------------------------------------------------------------
+
+K-means - K-means is a flat clustering algorithm. K-means first starts by randomly choosing K centroids. These centroids
+will become the centers of the clusters. Although they can be randomly generated, these points can also just be the
+first K points in the data set. Once these centroids are determined, each data point is then classified by which
+centroid it is closest to (using norm or Euclidean distance). From there the centers of each of these groups are
+calculated. This process is repeated until the centers of each of the classifications (clusters) cease to shift (or
+shift very little). The major downside of K-means is if the groups are significantly different sizes, since K-means (and
+other clustering algorithms) relies on distance, all of the clusters will tend to be about the same size. This means
+that a data set like this:
+^
+|
+|
+|    o             o o
+|  o o o           o o o
+|   o o o  o o o  o o o o
+|     o o o  o o o o o o
+|    o o   o    o  o   o o
+|     o  o o  o   o    o
+|       o   o   o o   o
+|       o o     o  o o
+|        o o    o   o o
+|       o o o o  o  o  o
+|------------------------------->
+
+May be seperated into 3 clusters of approximately the same size, despite the fact that the 2 "ears" should be much
+smaller than the third cluster (the "head"). As well, like the SVM K-means does not scale well (as it has to compare
+each point to each other point many times). However, also like the SVM, once trained K-means knows where the clusters
+are so classification is quick.
+There is also semisupervised learning, which is where a clustering algorithm is used to group the data set into
+categories and then these categories (along with the original data set) is fed into an SVM or some other supervised
+learning algorithm.
+Clustering is often used in research to find structure in data, not necessarily to classify data.
+Examples of this can be found at sklearn_k_means.py, titanic_dataset_analysis.py, and custom_k_means.py.
+
+------------------------------------------------------------------------------------------------------------------------
+
+Handling Non-Numerical Data - As in titanic.xml, sometimes not all data is numerical. Since all machine learning
+algorithms require numerical data, the easiest workaround is to simple make a set (so there are no repeats) of all of
+the possibilities and then assign a number or "id" to each. For example, for sex the set may look like:
+['female', 'male']
+So from this female would be 0 and male would be 1.
+An example of this can be found at titanic_dataset_analysis.py.
+
+------------------------------------------------------------------------------------------------------------------------
+
+Mean Shift - Mean shift is a hierarchical clustering algorithm. Mean shift starts my assuming every data point is a
+cluster center. To start the algorithm is given (or it determines) a radius (bandwidth). Then, for each point it finds
+all of the other points within the circle with the given radius. It finds the median of all of those points and repeats
+the process of finding all points within the radius and finding the median. This is done until this median doesn't move
+anymore. This process is repeated for each point in the data set. The cluster centers are then determined by the medians
+which converge into a single median. Another strategy is to have multiple bandwidths and weight each data point within
+that bandwidth less as they get farther away. This can penalize for distance from the median. The penalization can be
+done in a purely linear or some type of R Squared fashion. This is called dynamic bandwidth.
+An example of this can be found at sklearn_mean_shift.py, mean_shift_with_titanic.py, and custom_mean_shift.py.
+
+------------------------------------------------------------------------------------------------------------------------
+
+Neural Network - The neural network is a biologically inspired machine learning algorithm that has become quite popular
+recently. A neural network is a network of neurons. A neuron consists of dendrites, a nucleus, an axon, and an axon
+terminal. A neuron's dendrites connect with another neuron's axon terminal to form a very small neural network. Between
+these 2 neurons messages are sent though a space called the synapses. However, nothing in the artificial neural network
+uses these terms. The biological neural network gets inputs through the dendrites, this data is sent to the nucleus,
+which does something to the data, then this data might be sent out through the axon and axon terminal (if they fire) and
+will go to another neuron via the synapse. Sometimes the axon doesn't fire and there isn't any communication. Although
+the artificial neural network model is similar to this, there are some differences. An artificial neuron is modeled as
+follows. It takes a vector x as input data as well as a weight vector w. x and w are multiplied together and summed up.
+From there it is evaluated according to an activation function. This function is usually a sigmoid function producing
+an output which is in the range of 0 to 1. This means that a neuron can be mathematically modeled as y = f(xw) where f
+is the neuron and y is the output. A visual depiction of this can be found at Neuron.png. The model of a full neural
+network is as follows. The neural network has an input layer with an input x1, x2, x3... xn. Next to the input layer is
+a layer of neurons. In its most basic form each input xi feeds into each of the neurons in this layer and each input xi
+is also subject to a weight function. After this first layer (called a hidden layer), there may be any number more of
+these hidden layers. If there is more than one hidden layer than this means that it is a DNN (Deep Neural Network).
+Again in the most basic model each neuron from one layer connects to each other neuron on the next layer and is subject
+to a unique weight function. The last layer of this is an output layer of neurons which output the desired result. An
+image of this model can be found at NN Model.png. However, the main reason that for so long SVMs were favored over NNs
+is because NNs need way more training data. A good NN often need about 500,000,000 samples to be fully trained. Also,
+while an SVM is a convex optimization problem and only 2 variables have to be optimized, the NN looks more like a
+mountain range, making it hard to find the global minimum and the NN has to optimize the weight for every single
+connection between neurons and input values.
